@@ -38,32 +38,32 @@ Also, the regex should be customized to fit your needs:
 
 And any other line in order to fit your particular context.
 
-## Luminol implementation ##
+## Luminol implementation: influxdbLuminol.py ##
 
 The next script implements [luminol] for anomaly detection. We will be working with time series information like CPU usage, memory usage etc. After obtaining this information, by making queries to influx DB, we will analyze their possible anomalies by using [luminol]. 
 
 Below we can find an explanation of the functions used:
 
 
-## Funcion: encuentra_correlaciones(arrayts,arraynames,threshold2,threshold3)
+## Function: encuentra_correlaciones(arrayts,arraynames,threshold2,threshold3)
 
-### Esta funcion recibe como entrada los siguientes parametros:
+### This function receives the following values as inputs:
 
-  Parametro  | Valor
+  Parameter  | Value
   -----------| -------------
-  arrayts    | es un arreglo de series de tiempo
-  arraynames | es un arreglo con los nombres de las series de tiempo 
-  treshold2  | es el umbral de la anomalia
-  treshold3  | es el umbral de la correlacion
+  arrayts    | Time series array
+  arraynames | Time series names array
+  treshold2  | Anomaly threshold
+  treshold3  | Correlation threshold
 
 
-### Valores de retorno
+### Returned Values
 
-  Retorno      | Valor
+  Output      | Value
   -------------|-------------
-  Correlations | Dictionary: Contiene la informacion de las correlaciones dadas las anomalias.
+  Correlations | Dictionary: Contains the correlations information given the anomalies.
 
-### Codigo
+### Code
 
     def encuentra_correlaciones(arrayts,arraynames,threshold2,threshold3):
         correlations={}
@@ -82,28 +82,29 @@ Below we can find an explanation of the functions used:
 
     
 
-%md
 
-## Funcion: plot_serie_anomalia(ts,x,y,threshold,ubicacion,title,ylabel,numgraph) 
+## Function: plot_serie_anomalia(ts,x,y,threshold,ubicacion,title,ylabel,numgraph) 
 
-#### Esta funcion grafica las series de tiempo y las anomalias dado un umbral de anomalia
-### Esta funcion recibe como entrada los siguientes parametros:
+#### This function plots the time series and their anomalies given a particular anomaly threshold.
+### This function receives as input the following parameters:
 
-  Parametro | Valor
+  Parameter | Value
   ----------| -------------
-  ts        | Dictionary: Serie de tiempo
-  x         | List: Lista de valores del tiempo de la seria de tiempo
-  y         | List: Lista de valores de la seria de tiempo 
-  threshold | Double: Es el umbral de la anomalia
-  ubicacion | Int: Ubicacion del grafico en la figura
-  title     | String:  Titulo del grafico
-  ylabel    | String: Etiqueta del eje y
-  numgraph  | Int: Numgraph
+  ts        | Dictionary: Time series
+  x         | List: Time list from the time series
+  y         | List: Value list from the time series
+  threshold | Double: Anomaly threshold
+  ubicacion | Int: Plot location in the figure
+  title     | String:  Plot title
+  ylabel    | String: y ax label
+  numgraph  | Int: Number of plots in the figure
   
 
-### Esta funcion no retorna valores
+### This function doesn't return values
 
-    def plot_serie_anomalia(ts,x,y,threshold,ubicacion,title,ylabel,numgraph):
+### Code
+
+     def plot_serie_anomalia(ts,x,y,threshold,ubicacion,title,ylabel,numgraph):
         detector = luminol.anomaly_detector.AnomalyDetector(ts,score_threshold=threshold)
         anomalies = detector.get_anomalies()
         ax=plt.subplot(numgraph,1,ubicacion)
@@ -128,35 +129,34 @@ Below we can find an explanation of the functions used:
             plt.plot(anomaly_x, anomaly_y, 'ro')
 
 
-%md
 
-## Funcion: get_ts_from_influxdb(client,query,gen_name,value,time_value,numelements,acepta_fechas,fechas=None) 
+## Function: get_ts_from_influxdb(client,query,gen_name,value,time_value,numelements,acepta_fechas,fechas=None) 
 
-#### Esta funcion dado una query retorna un diccionario que contiene una serie de tiempo. Este diccionario es necesario para trabajar con luminol.
-### Esta funcion recibe como entrada los siguientes parametros:
+#### This function returns a dictionary given a particular influxdb query, this dictionary contains a time series that has the right format for luminol.
+### This function has the following parameters as inputs:
 
-  Parametro         | Valor
+  Parameter         | Value
   ------------------|--------------------------------------
-  client            | Objeto cliente: Cliente de influxdb
-  query             | String: contiene la query a ejecutar en el influxdb
-  gen_name          | String: nombre del generador. Para esto hay que conocer lo que retorna la query de antemano
-  value             | String: nombre del valor de la serie de tiempo
-  time_value        | String: nombre del valor del tiempo de la serie de tiempo
-  numelements       | Int: Numero de elementos a considerar en la seria de tiempo. Sirve para truncar la serie de tiempo
-  acepta_fechas     | Bool: Para reemplazar la lista de tiempo de la serie de tiempo por otra externa (control de errores).
-  fechas            | List: Lista con fechas externas.
+  client            | Client object: Influxdb client
+  query             | String: influxdb query
+  gen_name          | String: generator name, to know this value we must analyze the data returned by influxdb after making a query
+  value             | String: value name of the time series
+  time_value        | String: time name of the time series
+  numelements       | Int: max amount of data that we want to obtain from the query
+  acepta_fechas     | Bool: this parameter let us replace the time list from the time series for an external one (for debug).
+  fechas            | List: External date list 
   
-### Valores de retorno
+### Returned values
   
-  Retorno | Valor
+  Output | Value
   --------|---------
-  x       | list: Contiene los valores del tiempo de la serie de tiempo
-  y       | list: Contiene los valores de la serie de tiempo
-  ts      | Dictionary: Contiene como llave cada tiempo de la serie de tiempo asociado al valor de la serie de tiempo 
-  fechas  | list: Contiene las fechas en unix time de ts (o las mismas que recibio como parametro si recibe)
-  xlabel  | list: Contiene las horas del periodo de la serie de tiempo en formato ISO 8601
+  x       | list: Contains the time values from the time series
+  y       | list: Contains the values from the time series
+  ts      | Dictionary: Contains the time values as keys and the values are the time series values 
+  fechas  | list: Time values in unix time
+  xlabel  | list: Contains the hours from the time series period in ISO 8601 format
 
-### Codigo
+### Code
 
 
     def get_ts_from_influxdb(client,query,gen_name,value,time_value,numelements,acepta_fechas,fechas=None):
@@ -198,7 +198,7 @@ Below we can find an explanation of the functions used:
 
 %md
 
-## Funcion: get_correlations_of_anomalies(ts1,ts2,ts1name,ts2name,threshold1,threshold2) 
+## Function: get_correlations_of_anomalies(ts1,ts2,ts1name,ts2name,threshold1,threshold2) 
 
 #### Esta funcion encuentra las correlaciones en las anomalias dadas 2 series de tiempo.
 ### Esta funcion recibe como entrada los siguientes parametros:
