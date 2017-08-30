@@ -200,27 +200,27 @@ Below we can find an explanation of the functions used:
 
 ## Function: get_correlations_of_anomalies(ts1,ts2,ts1name,ts2name,threshold1,threshold2) 
 
-#### Esta funcion encuentra las correlaciones en las anomalias dadas 2 series de tiempo.
-### Esta funcion recibe como entrada los siguientes parametros:
+#### This function finds the anomaly correlations given 2 time series.
+### This function has as inputs the following parameters:
 
-  Parametro         | Valor
+  Parameter         | Value
   ------------------|--------------------------------------
-  ts1               | Dictionary: Serie de tiempo 1 a correlacionar
-  ts2               | Dictionary: Serie de tiempo 2 a correlacionar
-  ts1name           | String: nombre de la serie de tiempo 1
-  ts2name           | String: nombre de la serie de tiempo 2
-  threshold1        | Dobule: Umbral de la anomalia
-  threshold2        | Double: Umbral de el coeficiente de correlacion
+  ts1               | Dictionary: Time series to correlate (A)
+  ts2               | Dictionary: Time series to correlate (B)
+  ts1name           | String: Time series name (A)
+  ts2name           | String: Time series name (B)
+  threshold1        | Dobule: Anomaly threshold
+  threshold2        | Double: Correlation coefficient threshold
 
   
-### Valores de retorno
+### Returned values
   
-  Retorno           | Valor
+  Output           | Value
   ------------------|---------
-  period_coef       | Dictionary: Contiene la informacion de las correlaciones
+  period_coef       | Dictionary: Contains the correlations information
 
 
-### Codigo
+### Code
 
 
     def get_correlations_of_anomalies(ts1,ts2,ts1name,ts2name,threshold1,threshold2):
@@ -251,35 +251,29 @@ Below we can find an explanation of the functions used:
 
 
 
+## Function: get_times(hour,minute, aproximar) 
 
+#### This function sets the beggining time and end time of the time series.
+### This function receives the following parameters as inputs:
 
-
-
-%md
-
-## Funcion: get_times(hour,minute, aproximar) 
-
-#### Esta funcion fija el inicio y final de la series de tiempo.
-### Esta funcion recibe como entrada los siguientes parametros:
-
-  Parametro           | Valor
+  Parameter           | Value
   --------------------|--------------------------------------
-  hour                | Int: Cuantas horas a partir de ahora para atras queremos registrar las series de tiempo
-  minute              | Minutos: Ademas de las horas podemos decir cuantos minutos hacia atras queremos. Horas y minutos se suman. 
-  aproximar           | Boolean: True si queremos aproximar los segundos y microsegundos. Para usar luminol hay que aproximar los segundos.
+  hour                | Int: Amount of hours considered starting from the current time.
+  minute              | Int: Amount of minutes considered starting from the current time. final time = hour + minutes. 
+  aproximar           | Boolean: If we want to aproximate the seconds and miliseconds we must set this parameter as true.
 
   
-### Valores de retorno
+### Returned values
   
-  Retorno             | Valor
+  Output             | Value
   --------------------|---------
-  start_timeUTC       | String: Valor del tiempo inicial de las series de tiempo (tiempo actual) UTC (influxdb entiende UTC)
-  end_timeUTC         | String: Valor del final de las series de tiempo UTC
-  start_time          | String: Valor del tiempo inicial de las series de tiempo (tiempo actual) 
-  end_time            | String: Valor del final de las series de tiempo 
+  start_timeUTC       | String: Initial time for the time series (current time) UTC (influxdb understands UTC)
+  end_timeUTC         | String: Final time for the time series UTC
+  start_time          | String: Initial time for the time series (current time)
+  end_time            | String: Final time for the time series 
 
 
-### Codigo
+### Code
 
 
     def get_times(hour,minute, aproximar):
@@ -300,24 +294,10 @@ Below we can find an explanation of the functions used:
 
 
 
-                
 
+# Example
 
-
-
-
-
-
-
-
-
-%md
-
-
-
-# Ejemplo de uso
-
-#### Se fijan los parametros del tiempo de la serie de tiempo y se guardan los valores
+#### We set and save the time parameter for the time series
 
     aproximar=True
     times=get_times(12,0,aproximar)
@@ -326,49 +306,49 @@ Below we can find an explanation of the functions used:
     start_time_z=times[3]
     end_time_z=times[2]
 
-### Se contruye la porcion del query de influxdb que pide el intervalo    
+### We build the query time interval with the previous information    
 
     :::python
     time_period="AND  time >= {0} AND time <= {1}".format(start_time,end_time)
 
-### Se fijan los parametros para obtener la primera seria de tiempo
+### We initialize the client object and the parameters to obtain the first time series
 
     numelements=1300
-    client = InfluxDBClient(host='192.168.70.6', port=9086, username='root', password='P13Ak!ix', database='monstermometer')
-    query="SELECT CargaCPU FROM UsoCPU WHERE hostname = 'Seeker.pentasec.local' {0} limit 1000;".format(time_period)
+    client = InfluxDBClient(host='192.168.xx.xx', port=9086, username='username', password='password', database='databasename')
+    query="SELECT CargaCPU FROM UsoCPU WHERE hostname = 'xxxx.pentasec.local' {0} limit 1000;".format(time_period)
     gen_name='UsoCPU'
     value='CargaCPU'
     time_value='time'
     acepta_fechas=False
     
-### Se fijan los parametros para obtener la segunda seria de tiempo    
+### We set the parameters to obtain the first time series
     
     
-    query2="SELECT StorageUsed*100/TotalSize FROM Storage WHERE hostname = 'Seeker.pentasec.local' AND Dispositivo = 'Physical Memory' {0} limit 1000; ".format(time_period) 
+    query2="SELECT StorageUsed*100/TotalSize FROM Storage WHERE hostname = 'xxxx.pentasec.local' AND Dispositivo = 'Physical Memory' {0} limit 1000; ".format(time_period) 
     gen_name2='Storage'
     value2='StorageUsed_TotalSize'
     time_value2='time'
     acepta_fechas2=False
 
-### Se obtienen las series de tiempo (ts) y los valores asociados a estas.
+### We obtain the time series (ts) and the values associated with them
 
     x,y,ts,fechas,xlabels = get_ts_from_influxdb(client,query,gen_name,value,time_value,numelements,acepta_fechas)
     x2,y2,ts2,fechas2,xlabel2=get_ts_from_influxdb(client,query2,gen_name2,value2,time_value2,numelements,acepta_fechas2)
 
-### Para obtener las correlaciones. Se crean los parametros necesario: 
-
+### In order to obtain the correlations we set the required parameters: 
+ 
     arrayts=[ts,ts2]
     arraynames=["uso CPU","StorageUsed"]
     threshold2=3
     threshold3=0.8
     
-### se ejecuta la funcion respectiva y se guarda el valor.
+### We execute the function and we save the value
 
     correlaciones=encuentra_correlaciones(arrayts,arraynames,threshold2,threshold3)
 
-### El diccionario de retorno tendra el siguiente formato:
-### En el caso de abajo solo una combinacion presento correlaciones
-### El ejemplo de abajo se hizo para 4 series de tiempo
+### The returned dictionary will have the following format:
+### In the example below only one combination presented correlations.
+### The example below was executed with 4 time series.
 
     {'A.B. Entrante y A.B. Saliente': {},
      'A.B. Entrante y StorageUsed': {},
@@ -388,25 +368,25 @@ Below we can find an explanation of the functions used:
 
 
 
-### Si se quiere graficar las series de tiempo con sus anomalias se reliza lo siguuiente:
+### If you want to plot the time series with their anomalies you have to do the following:
 
-### Se fijan variables de la figura como tamano y numeros de subfiguras
-    
+### We set the figure variables, like size and number of sub-figures
+ 
     plt.figure(figsize=(10,15))
     numgraph=4 #Numero de graficos
 
-### Se fija el umbral de las anomalias y parametros del grafico
+### We set the anomaly threshold and plot parameters
 
     threshold=3
     ubicacion=1 # Ubicacion de esta subfigura
     title='Carga CPU entre {0} y {1}'.format(start_time_z,end_time_z)
     ylabel='Carga CPU'
 
-### Se grafica
+### We plot
 
     plot_serie_anomalia(ts,x,y,threshold,ubicacion,title,ylabel,numgraph)
 
-### Se hacer lo mismo para n cantidades de subgraficos
+### We can do this for n number of sub-plots
 
     threshold=3
     ubicacion=2
@@ -416,9 +396,7 @@ Below we can find an explanation of the functions used:
     plot_serie_anomalia(ts2,x,y2,threshold,ubicacion,title,ylabel,numgraph)
 
 
-### Los graficos quedaran todos en una misma figura para efectos visuales.
-
-
+### All the plots will be located in the same figures for visual purposes.
 
 
 
