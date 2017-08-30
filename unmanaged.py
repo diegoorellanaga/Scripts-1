@@ -21,11 +21,6 @@ from email.mime.text import MIMEText
 import csv
 
 
-#ejemplo #example
-#destino='d:\Users\d.orellana\Desktop'
-#filedeleteip='d:\Users\d.orellana\Desktop\Diego_akainix_files\Mail\ips.txt'
-#filedeletemac='d:\Users\d.orellana\Desktop\mac\mac.txt'
-#filedeleteven="d:\\Users\\d.orellana\\Desktop\\ven\\ven.txt"
 files = open("workfile","w")
 files.write("Hello World")
 files.close()
@@ -72,9 +67,6 @@ def main(argv):
             p=0
             for j in range(length2):
                 p=p-1
-               # print("largo ips: {0} ".format(len(ips)))
-               # print("value of p {0}".format(p))
-               # print("indice a sacar {0}".format(indices[p]))
                 ips.pop(indices[p])
                 macs.pop(indices[p])
                 vends.pop(indices[p])
@@ -196,8 +188,6 @@ def main(argv):
         filedeleteip= "{0}/{1}/ip.txt".format(filedeleteip,onlydomain)
         filedeletemac= "{0}/{1}/mac.txt".format(filedeletemac,onlydomain)
         filedeleteven= "{0}/{1}/ven.txt".format(filedeleteven,onlydomain)
-      #  body = get_first_text_block(email_message) #obtengo el cuerpo del email
-      #  decoded_body=base64.b64decode(body) #lo decodifico
         raw_email2=raw_email.replace('\r\n','')
         raw_email3=raw_email2.replace('=','')
         macip=re.findall('(width3D"10%">[0-9]+(?:\.[0-9]+){3})<\/td><td (width3D"20%">[0-9a-f]{2}(?:-[0-9a-f]{2}){5})',raw_email3) #juntos
@@ -266,9 +256,9 @@ def main(argv):
             msg['Subject'] = "Computer Detected without Symantec Client Software: {0} ".format(onlydomain)
             msg['From'] = 'diego.orellana@akainix.com'
             msg['To'] = 'diego.orellana@akainix.com'
-            s = smtplib.SMTP('godzuki.penta-sec.com')
-            #godzuki.penta-sec.com
-            s.sendmail('diego.orellana@akainix.com','alertas@akainix.com',msg.as_string())
+            s = smtplib.SMTP('xxxxx.penta-sec.com')
+            #xxxx.penta-sec.com
+            s.sendmail('diego.orellana@akainix.com','xxxxx@akainix.com',msg.as_string())
             s.sendmail('diego.orellana@akainix.com','diego.orellana@akainix.com',msg.as_string())
             #s.send_message(msg)
             s.quit()

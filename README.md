@@ -18,7 +18,27 @@ You need to set the credential of the server and the email addresses inside the 
 
 Then in the crontab, you need to set your script in a way that you may register the exceptions and logs (all the prints commands).
 
-I hope you find this script useful. Message me if you have any question. 
+Below we can find a example that tells us how to execute this script:
+
+          test.py -i <pathtofolder> -m <pathtofolder> -v <pathtofolder> -d <full_destinofinal>
+          python unmanage.py -i /root/unmanaged_filtro -m /root/unmanaged_filtro -v /root/unmanaged_filtro -d /root/unmanaged"
+
+
+You must customize the following lines with your own information:
+
+	mail=imaplib.IMAP4("192.168.xx.x", ###)
+	mail.login("username","password")
+	result, data = mail.uid('search', None, '(UNSEEN)','(HEADER Subject "Computer Detected without Symantec Client Software")')
+	s.sendmail('diego.orellana@akainix.com','xxxxx@akainix.com',msg.as_string())
+	s.sendmail('diego.orellana@akainix.com','diego.orellana@akainix.com',msg.as_string())
+
+Also the regex should be also customized:
+
+	macip=re.findall('(width3D"10%">[0-9]+(?:\.[0-9]+){3})<\/td><td (width3D"20%">[0-9a-f]{2}(?:-[0-9a-f]{2}){5})',raw_email3) #juntos
+
+And any other line in order to fit your particular context.
+
+### I hope you find this script useful. Let me know if you have any question. ###
 
 
 
