@@ -14,13 +14,12 @@ This script was written in Python. The purpose of this script was to filter Info
 Once we get the filtered information we proceed to send it by email to a given destination. We used a cron job to execute this script periodically.
 
 
-You need to set the credential of the server and the email addresses inside the script, and the paths to the filter files and the filtered information, as parameters.
+You need to set the credential of the server and the email addresses inside the script. The paths to the filter files and the filtered information are given as parameters.
 
 Then in the crontab, you need to set your script in a way that you may register the exceptions and logs (all the prints commands).
 
 Below we can find a example that tells us how to execute this script:
 
-          test.py -i <pathtofolder> -m <pathtofolder> -v <pathtofolder> -d <full_destinofinal>
           python unmanage.py -i /root/unmanaged_filtro -m /root/unmanaged_filtro -v /root/unmanaged_filtro -d /root/unmanaged"
 
 
@@ -32,7 +31,7 @@ You must customize the following lines with your own information:
 	s.sendmail('diego.orellana@akainix.com','xxxxx@akainix.com',msg.as_string())
 	s.sendmail('diego.orellana@akainix.com','diego.orellana@akainix.com',msg.as_string())
 
-Also the regex should be also customized:
+Also, the regex should be customized to fit your needs:
 
 	macip=re.findall('(width3D"10%">[0-9]+(?:\.[0-9]+){3})<\/td><td (width3D"20%">[0-9a-f]{2}(?:-[0-9a-f]{2}){5})',raw_email3) #juntos
 
